@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.nifcloud.mbaas.core.NCMB
-import com.nifcloud.mbaas.core.NCMBPush
 
 
 class MainActivity : AppCompatActivity() {
@@ -14,18 +13,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         //**************** APIキーの設定とSDKの初期化 **********************
         NCMB.initialize(this, "YOUR_APPLICATION_KEY", "YOUR_CLIENT_KEY")
-
+        NCMB.initializePush(this.applicationContext)
         setContentView(R.layout.activity_main)
     }
 
     public override fun onResume() {
         super.onResume()
-
-        //リッチプッシュ通知の表示
-        NCMBPush.richPushHandler(this, intent)
-
-        //リッチプッシュを再表示させたくない場合はintentからURLを削除します
-        intent.removeExtra("com.nifcloud.mbaas.RichUrl")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
