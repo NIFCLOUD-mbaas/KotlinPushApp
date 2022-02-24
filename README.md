@@ -22,14 +22,13 @@
     - google-services.json とFirebase秘密鍵の設定
     - ニフクラ mobile backend での設定
     - アプリでの設定
-* 詳しい設定内容は[プッシュ通知（Android）](https://mbaas.nifcloud.com/doc/current/push/basic_usage_android.html)をご参照ください
+* 詳しい設定内容は[プッシュ通知（Android）](https://mbaas.nifcloud.com/doc/current/push/basic_usage_kotlin.html)をご参照ください
 
 ## 動作環境
-* Windows 7 Professional
-* Android Studio v3.1
-* Android ver 4x,5x,6x,7x
-* Android SDK v3
-  - SDK v2系だと動作しないので注意
+* macOS Monterey
+* Android Studio Arctic Fox | 2020.3.1 Patch 3
+* Android ver 8.0.0
+* Kotlin SDK v1.0.0
 
 ※このサンプルアプリは、プッシュ通知を受信する必要があるため実機ビルドが必要です<br>
 ※上記内容で動作確認をしています
@@ -97,10 +96,10 @@ __▼ google-services.jsonとFirebase秘密鍵の設定方法について ▼__<
 
 ### 3. SDKの導入（実装済み）
 
-※このサンプルアプリには既にSDKが実装済み（下記手順）となっています。（ver.3.0.0)<br>　最新版をご利用の場合は入れ替えてご利用ください。
+※このサンプルアプリには既にSDKが実装済み（下記手順）となっています。（ver.1.0.0)<br>　最新版をご利用の場合は入れ替えてご利用ください。
 
 * SDKダウンロード
-SDKはここ（[SDK リリースページ](https://github.com/NIFCloud-mbaas/ncmb_android/releases)）から取得してください.
+SDKはここ（[SDK リリースページ](https://github.com/NIFCLOUD-mbaas/ncmb_kotlin/releases)）から取得してください.
   - NCMB.jarファイルがダウンロードします。
 * SDKをインポート
   - app/libsフォルダにNCMB.jarをコピーします
@@ -108,8 +107,16 @@ SDKはここ（[SDK リリースページ](https://github.com/NIFCloud-mbaas/ncm
   - app/build.gradleファイルに以下を追加します
 ```gradle
 dependencies {
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile files('libs/NCMB.jar')
+    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
+    implementation 'com.google.code.gson:gson:2.3.1'
+    api files('libs/NCMB.jar')
+
+    //同期処理を使用する場合はこちらを追加していただく必要があります
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
+    implementation platform('com.google.firebase:firebase-bom:28.4.0') //追加
+    implementation 'com.google.firebase:firebase-messaging-ktx' //追加
+    implementation 'com.google.firebase:firebase-analytics-ktx' //追加
+    implementation 'com.google.android.gms:play-services-base:17.6.0' //追加
 }
 ```
   - androidManifestの設定
@@ -117,6 +124,9 @@ dependencies {
 ```html
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<uses-permission android:name="android.permission.VIBRATE" />
 ```
 
 ### 4. APIキーの設定
@@ -188,19 +198,18 @@ dependencies {
 サンプルプロジェクトに実装済みの内容のご紹介
 
 #### SDKのインポートと初期設定
-* ニフクラ mobile backend の[ドキュメント（クイックスタート）](https://mbaas.nifcloud.com/doc/current/introduction/quickstart_android.html)をご用意していますので、ご活用ください
+* ニフクラ mobile backend の[ドキュメント（クイックスタート）](https://mbaas.nifcloud.com/doc/current/introduction/quickstart_kotlin.html)をご用意していますので、ご活用ください
 
 #### ロジック
 * `activity_main.xml` でデザインを作成し、`MainActivity.kt`にロジックを書いています
-*  installationクラス(端末情報)が保存される処理は SDK v3.0.0 より記述は不要となりました
-  - 「APIキーの設定とSDKの初期化」のみ実装がされていれば、ニフクラ mobile backend の管理画面上でプッシュ通知の配信設定がされている場合、レジスタレーションIDの取得が自動的にされるようになっています
 
 ```kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    //**************** APIキーの設定とSDKの初期化 **********************
-    NCMB.initialize(this.applicationContext, "YOUR_APPLICATION_KEY", "YOUR_CLIENT_KEY");
-    setContentView(R.layout.activity_main)
+  super.onCreate(savedInstanceState)
+  //**************** APIキーの設定とSDKの初期化 **********************
+  NCMB.initialize(this, "YOUR_APPLICATION_KEY", "YOUR_CLIENT_KEY")
+  NCMB.initializePush(this.applicationContext)
+  setContentView(R.layout.activity_main)
 }
 ```
 
