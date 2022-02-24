@@ -27,6 +27,7 @@
 ## 動作環境
 * macOS Monterey
 * Android Studio Arctic Fox | 2020.3.1 Patch 3
+* Android ver 8.0.0
 * Kotlin SDK v1.0.0
 
 ※このサンプルアプリは、プッシュ通知を受信する必要があるため実機ビルドが必要です<br>
@@ -112,6 +113,10 @@ dependencies {
 
     //同期処理を使用する場合はこちらを追加していただく必要があります
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
+    implementation platform('com.google.firebase:firebase-bom:28.4.0') //追加
+    implementation 'com.google.firebase:firebase-messaging-ktx' //追加
+    implementation 'com.google.firebase:firebase-analytics-ktx' //追加
+    implementation 'com.google.android.gms:play-services-base:17.6.0' //追加
 }
 ```
   - androidManifestの設定
@@ -119,6 +124,9 @@ dependencies {
 ```html
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<uses-permission android:name="android.permission.VIBRATE" />
 ```
 
 ### 4. APIキーの設定
