@@ -25,12 +25,11 @@
 * 詳しい設定内容は[プッシュ通知（Android）](https://mbaas.nifcloud.com/doc/current/push/basic_usage_kotlin.html)をご参照ください
 
 ## 動作環境
-* macOS Monterey
-* Android Studio Arctic Fox | 2020.3.1 Patch 3
-* Android ver 8.0.0
-* Kotlin SDK v1.0.0
+* MacOS Monterey version 12.5
+* Android Studio Chipmunk | 2021.2.1 Patch 2
+* Pixel 2 - Android 13 (Simulator)
+* KotlinSDK v1.2.0
 
-※このサンプルアプリは、プッシュ通知を受信する必要があるため実機ビルドが必要です<br>
 ※上記内容で動作確認をしています
 
 <div style="page-break-before:always"></div>
@@ -127,6 +126,7 @@ dependencies {
 <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 <uses-permission android:name="android.permission.VIBRATE" />
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 ```
 
 ### 4. APIキーの設定
