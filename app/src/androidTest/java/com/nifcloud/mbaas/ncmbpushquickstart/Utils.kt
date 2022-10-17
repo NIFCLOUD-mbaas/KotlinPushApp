@@ -1,9 +1,13 @@
 package com.nifcloud.mbaas.ncmbpushquickstart
 
+import android.os.Build
 import android.util.Log
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObjectNotFoundException
+import androidx.test.uiautomator.UiSelector
 import com.nifcloud.mbaas.core.*
-import org.json.JSONArray
-import org.json.JSONException
+
 
 private const val TAG = "FcmService"
 const val NOTIFICATION_TITLE = "UITest push notification"
@@ -33,5 +37,19 @@ object Utils {
                 }
             }
         })
+    }
+
+    internal fun allowPermissionsIfNeeded() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            val device = UiDevice.getInstance(getInstrumentation())
+            val allowPermissions = device.findObject(UiSelector().text("Allow"))
+            if (allowPermissions.exists()) {
+                try {
+                    allowPermissions.click()
+                } catch (e: UiObjectNotFoundException) {
+                    Log.d(TAG, "Error: " + e.message)
+                }
+            }
+        }
     }
 }

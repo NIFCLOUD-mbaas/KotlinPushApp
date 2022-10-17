@@ -36,6 +36,7 @@ class ExecuteUITest {
 
     @Test
     fun initialScreen() {
+        Utils.allowPermissionsIfNeeded()
         Espresso.onView(ViewMatchers.withText("Hello world!"))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
@@ -43,6 +44,7 @@ class ExecuteUITest {
     @Test
     @Throws(InterruptedException::class)
     fun clickOnSendNotification() {
+        Utils.allowPermissionsIfNeeded()
         sendPushWithSearchCondition()
         device.openNotification()
         device.wait(Until.hasObject(By.text(NOTIFICATION_TITLE)), TIMEOUT.toLong())
