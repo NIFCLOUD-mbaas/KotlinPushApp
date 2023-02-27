@@ -25,10 +25,10 @@
 * 詳しい設定内容は[プッシュ通知（Android）](https://mbaas.nifcloud.com/doc/current/push/basic_usage_kotlin.html)をご参照ください
 
 ## 動作環境
-* MacOS Monterey version 12.5
-* Android Studio Chipmunk | 2021.2.1 Patch 2
-* Pixel 2 - Android 13 (Simulator)
-* KotlinSDK v1.2.0
+* MacOS Ventura version 13.2.1
+* Android Studio Dolphin | 2021.3.1 Patch 1
+* Pixel 6 - Android 13 (Simulator)
+* KotlinSDK v1.3.0
 
 ※上記内容で動作確認をしています
 
@@ -95,7 +95,7 @@ __▼ google-services.jsonとFirebase秘密鍵の設定方法について ▼__<
 
 ### 3. SDKの導入（実装済み）
 
-※このサンプルアプリには既にSDKが実装済み（下記手順）となっています。（ver.1.0.0)<br>　最新版をご利用の場合は入れ替えてご利用ください。
+※このサンプルアプリには既にSDKが実装済み（下記手順）となっています。（ver.1.3.0)<br>　最新版をご利用の場合は入れ替えてご利用ください。
 
 * SDKダウンロード
 SDKはここ（[SDK リリースページ](https://github.com/NIFCLOUD-mbaas/ncmb_kotlin/releases)）から取得してください.
@@ -105,28 +105,44 @@ SDKはここ（[SDK リリースページ](https://github.com/NIFCLOUD-mbaas/ncm
 * 設定追加
   - app/build.gradleファイルに以下を追加します
 ```gradle
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.gms.google-services' //追加
+}
 dependencies {
-    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
-    implementation 'com.google.code.gson:gson:2.3.1'
-    api files('libs/NCMB.jar')
-
-    //同期処理を使用する場合はこちらを追加していただく必要があります
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
-    implementation platform('com.google.firebase:firebase-bom:28.4.0') //追加
-    implementation 'com.google.firebase:firebase-messaging-ktx' //追加
-    implementation 'com.google.firebase:firebase-analytics-ktx' //追加
-    implementation 'com.google.android.gms:play-services-base:17.6.0' //追加
+  implementation 'androidx.appcompat:appcompat:1.3.1'
+  implementation 'com.google.code.gson:gson:2.3.1'
+  api files('libs/NCMB.jar')
+  implementation platform('com.google.firebase:firebase-bom:28.4.0') //追加
+  implementation 'com.google.firebase:firebase-messaging-ktx' //追加
+  implementation 'com.google.firebase:firebase-analytics-ktx' //追加
+  implementation 'com.google.android.gms:play-services-base:17.6.0' //追加
 }
 ```
-  - androidManifestの設定
-    - <application>タグの直前に以下のpermissionを追加します
-```html
+* androidManifestの設定
+  - <application>タグの直前にpermissionを追加します
+  - <application>タグのの要素としてserviceの登録を行います
+
+
+```xml
+<!-- 省略 -->
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 <uses-permission android:name="android.permission.VIBRATE" />
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<application>
+ <!-- 省略 -->
+ <service
+     android:name="com.nifcloud.mbaas.core.NCMBFirebaseMessagingService"
+     android:exported="false">
+     <intent-filter>
+         <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+     </intent-filter>
+ </service>
+</application>
 ```
 
 ### 4. APIキーの設定
@@ -207,7 +223,7 @@ dependencies {
 override fun onCreate(savedInstanceState: Bundle?) {
   super.onCreate(savedInstanceState)
   //**************** APIキーの設定とSDKの初期化 **********************
-  NCMB.initialize(this, "YOUR_APPLICATION_KEY", "YOUR_CLIENT_KEY")
+  NCMB.initialize(this.applicationContext, "YOUR_APPLICATION_KEY", "YOUR_CLIENT_KEY")
   NCMB.initializePush(this.applicationContext)
   setContentView(R.layout.activity_main)
 }
